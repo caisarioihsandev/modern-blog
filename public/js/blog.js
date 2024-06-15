@@ -45,7 +45,7 @@ const addArticle = (ele, data) => {
                 i++;
             }
             let tag = `h${hCount}`;
-            ele.innerHTML += `<${tag}>${item.slice(hCount, item.length)}</${tag}>`
+            ele.innerHTML += `<${tag}>${item.slice(hCount, item.length)}</${tag}><br/>`
         } 
 
         //checking for image format
@@ -61,10 +61,10 @@ const addArticle = (ele, data) => {
             let alt = item.slice(2, seperator);
             let src = item.slice(seperator + 2, item.length - 1);
             ele.innerHTML += `
-            <img src="${src}" alt="${alt}" class="article-image">
+            <img src="${src}" alt="${alt}" class="article-image"><br/>
             `;
         } else {
-            ele.innerHTML += `<p>${item}</p>`;
+            ele.innerHTML += `<p>${item}</p><br/>`;
         }
     });
 }
