@@ -35,6 +35,23 @@ app.get('/', (req, res) => {
     res.sendFile(path.join(initial_path,"home.html"));
 });
 
+app.get('/api/blogs', (req, res) => {
+    const query = 'SELECT * FROM blogs';
+
+    db.query(query, [], (error, results) => {
+        if (error) {
+            res.status(500).send('Server error');
+            throw error;
+        }
+
+        if (results.length > 0) {
+            res.json(results);
+        } else {
+            res.status(404).send('No Blog to be written');
+        }
+    });
+});
+
 app.get('/editor', (req, res) => {
     res.sendFile(path.join(initial_path, "editor.html"));
 })

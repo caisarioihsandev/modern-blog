@@ -28,3 +28,19 @@
     margin: 30px, 0;
     color: #2d2d2d;
 }
+
+.article-image {
+    max-width: 100%;
+    max-height: 400px;
+    display: block;
+    margin: 30px auto;
+    object-fit: contain;
+}
+
+.sub-heading {
+    padding: 0 5vw;
+    color: #2d2d2d;
+    font-weight: 500;
+    font-size: 40px;
+    margin-top: 80px;
+}
