@@ -1,7 +1,6 @@
-let urlParams = new URLSearchParams(window.location.search);
-let blogId = decodeURI(location.pathname.split("/").pop());
+let blogDocName = decodeURI(location.pathname.split("/").pop());
 
-fetch(`/api/blog/${blogId}`)
+fetch(`/apiblog/blog/${blogDocName}`)
     .then(response => {
         if (!response.ok) {
             throw new Error('Blog not found');
@@ -27,12 +26,26 @@ const setupBlog = (data) => {
     titleTag.innerHTML = `Blog : ${data.title}`;
     blogTitle.innerHTML = data.title;
     publish.innerHTML += data.publishedAt;
+    if (data.author) {
+        publish.innerHTML += ` -- ${data.username}`;
+    }
+
+    const token = localStorage.getItem('access_token');
+
+    if (token) {
+        const decode = JSON.parse(localStorage.getItem('user'));
+        if (data.author === decode.id) {
+            let editBtn = document.getElementById('edit-blog-btn');
+            editBtn.style.display = "inline";
+            editBtn.href = `${blogDocName}/editor`;
+        }
+    }
 
     const article = document.querySelector('.article');
-    addArticle(article, data.article);
+    readArticle(article, data.article);
 }
 
-const addArticle = (ele, data) => {
+const readArticle = (ele, data) => {
     data = data.split("\n").filter(item => item.length);
     
     data.forEach(item => {

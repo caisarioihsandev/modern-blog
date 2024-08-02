@@ -1,6 +1,6 @@
 const blogSection = document.querySelector('.blogs-section');
 
-fetch('/api/blogs')
+fetch('/apiblog/allblogs')
 .then(response => response.json())
 .then(blogs => {
     blogs.forEach(blog => {
@@ -19,7 +19,7 @@ const createBlog = (blog) => {
         <img src="${blog.bannerImage}" class="blog-image" alt="">
         <h1 class="blog-title">${blog.title.substring(0, 100) + '...'}</h1>
         <p class="blog-overview">${blog.article.substring(0, 200) + '...'}</p>
-        <a href="/${blog.id}" class="btn dark">read</a>
+        <a href="/${blog.docName}" class="btn dark">read</a>
     </div>
     `;
 }

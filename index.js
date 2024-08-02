@@ -2,59 +2,27 @@ const express = require("express");
 const path = require("path");
 const fileupload = require("express-fileupload");
 const bodyParser = require("body-parser");
-const mysql = require('mysql');
-const { error } = require("console");
+const cookieParser = require("cookie-parser");
 
-let initial_path = path.join(__dirname, "/public");
+const db = require("./config/db.js");
+const apiUserRoutes = require("./routes/apiUser.js");
+const apiBlogRoutes = require("./routes/apiPost.js");
+
+const verifyToken = require("./controllers/user.js").verifyToken;
+
+const initial_path = path.join(__dirname, "/public");
 const app = express();
-
-const db = mysql.createConnection({
-    host:"localhost",
-    user:"root",
-    password: "",
-    database:"m_blog"
-});
-  
-// MYSQL connection
-db.connect((err) => {
-    if (err) {
-        throw err;
-    }
-    console.log('MySQL Connected...');
-});
 
 // Middleware
 app.use(bodyParser.urlencoded({ extended: false }));
-app.use(bodyParser.json());
-
+app.use(express.json());
+app.use(cookieParser());
 app.use(express.static(initial_path));
 app.use(fileupload());
 
-// Serve the HTML
-app.get('/', (req, res) => {
-    res.sendFile(path.join(initial_path,"home.html"));
-});
-
-app.get('/api/blogs', (req, res) => {
-    const query = 'SELECT * FROM blogs';
-
-    db.query(query, [], (error, results) => {
-        if (error) {
-            res.status(500).send('Server error');
-            throw error;
-        }
-
-        if (results.length > 0) {
-            res.json(results);
-        } else {
-            res.status(404).send('No Blog to be written');
-        }
-    });
-});
-
-app.get('/editor', (req, res) => {
-    res.sendFile(path.join(initial_path, "editor.html"));
-})
+// API routes
+app.use("/apiuser", apiUserRoutes.router);
+app.use("/apiblog", apiBlogRoutes.router);
 
 // upload link
 app.post('/upload', (req, res) => {
@@ -76,42 +44,35 @@ app.post('/upload', (req, res) => {
     })
 });
 
-// Handle form submission
-app.post('/submit', (req, res) => {
-    const { title, article, bannerImage, publishedAt, docName } = req.body;
-    const sql = 'INSERT INTO blogs (title, article, bannerImage, publishedAt, docName) VALUES (?, ?, ?, ?, ?)';
-    db.query(sql, [title, article, bannerImage, publishedAt, docName], (err, result) => {
-        if (err) {
-            console.error(err);
-            res.json({ success: false, error: err.message });
-            return;
-        }
-        console.log('Data inserted');
-        res.json({ success: true });
-    });
+// Serve the HTML
+app.get('/', (req, res) => {
+    res.sendFile(path.join(initial_path,"home.html"));
 });
 
-app.get('/:id', (req, res) => {
+app.get('/admin', verifyToken, (req, res) => {
+    res.sendFile(path.join(initial_path, "dashboard.html"));
+});
+
+app.get('/login', (req, res) => {
+    res.sendFile(path.join(initial_path, "login.html"));
+});
+
+app.get('/register', (req, res) => {
+    res.sendFile(path.join(initial_path, "register.html"));
+});
+
+// Create New Blog
+app.get('/editor', verifyToken, (req, res) => {
+    res.sendFile(path.join(initial_path, "editor.html"));
+});
+
+app.get('/:docName', (req, res) => {
     res.sendFile(path.join(initial_path, "blog.html"));
 });
 
-// Define a route to get a blog post by ID
-app.get('/api/blog/:id', (req, res) => {
-    const blogId = req.params.id;
-
-    const query = 'SELECT * FROM blogs WHERE id = ?';
-    db.query(query, [blogId], (error, results) => {
-        if (error) {
-            res.status(500).send('Server error');
-            throw error;
-        }
-
-        if (results.length > 0) {
-            res.json(results[0]);
-        } else {
-            res.status(404).send('Blog not found');
-        }
-    });
+// Update/Edit Blog
+app.get('/:docName/editor', verifyToken, (req, res) => {
+    res.sendFile(path.join(initial_path, "editor.html"));
 });
 
 app.use((req, res) => {
