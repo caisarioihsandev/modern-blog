@@ -1,8 +1,17 @@
-const sqlite3 = require("sqlite3");
-const path = require('path');
-const dbFile = path.join(__dirname, 'm_blog.db');
+const mysql = require('mysql');
+const dotenv = require("dotenv");
 
-const db = new sqlite3.Database(dbFile, sqlite3.OPEN_READWRITE, (err) => {
+dotenv.config({ path: './.env' })
+
+const db = mysql.createConnection({
+    host: process.env.DATABASE_HOST,
+    user: process.env.DATABASE_USERNAME,
+    password: process.env.DATABASE_PASSWORD,
+    database: process.env.DATABASE
+});
+
+// MYSQL connection
+db.connect((err) => {
     if (err) {
         console.error("Error opening database: ", err.message);
     } else {
