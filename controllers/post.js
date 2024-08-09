@@ -12,8 +12,8 @@ const blogs = (req, res) => {
 
     try {
         const decode = jwt.verify(token, secretKey);
-        const query = 'SELECT * FROM blogs WHERE author = ?';
-        db.query(query, [decode.id], (error, results) => {
+        const sql = 'SELECT * FROM blogs WHERE author = ?';
+        db.all(sql, [decode.id], (error, results) => {
             if (error) {
                 res.status(500).send('Server error');
             }
@@ -30,8 +30,8 @@ const blogs = (req, res) => {
 };
 
 const allblogs = (req, res) => {
-    const query = 'SELECT * FROM blogs';
-    db.query(query, (error, results) => {
+    const sql = 'SELECT * FROM blogs';
+    db.all(sql, (error, results) => {
         if (error) {
             res.status(500).send('Server error');
             throw error;
@@ -50,8 +50,8 @@ const singleblog = (req, res) => {
     const blogDocName = req.params.id;
     
     // Please add inner join to users table
-    const query = 'SELECT * FROM blogs WHERE docName = ?';
-    db.query(query, [blogDocName], (error, results) => {
+    const sql = 'SELECT * FROM blogs WHERE docName = ?';
+    db.all(sql, [blogDocName], (error, results) => {
         if (error) {
             res.status(500).send('Server error');
             throw error;
@@ -90,7 +90,7 @@ const submit = (req, res) => {
                 author = ?
             WHERE id=?`;
             
-            db.query(sql, [
+            db.all(sql, [
                 data.title, 
                 data.article, 
                 data.bannerImage, 
@@ -111,7 +111,7 @@ const submit = (req, res) => {
             // INSERT new article
             sql = 'INSERT INTO blogs (title, article, bannerImage, publishedAt, docName, author) VALUES (?, ?, ?, ?, ?, ?)';
             
-            db.query(sql, [
+            db.all(sql, [
                 data.title, 
                 data.article, 
                 data.bannerImage, 
@@ -142,7 +142,7 @@ const remove = (req, res) => {
     let filePath;
     
     sql = 'SELECT * FROM blogs WHERE docName = ?';
-    db.query(sql, [docName], (err, result) => {
+    db.all(sql, [docName], (err, result) => {
         if (err) {
             console.error(err);
             return res.json({ success: false, error: err.message });
@@ -196,7 +196,7 @@ const remove = (req, res) => {
 
         // Delete from database
         sql = 'DELETE FROM blogs WHERE docName = ?';
-        db.query(sql, [docName], (err, result) => {
+        db.all(sql, [docName], (err, result) => {
             if (err) {
                 console.error(err);
                 return res.json({ success: false, error: err.message });

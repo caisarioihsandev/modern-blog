@@ -26,7 +26,7 @@ const register = (req, res) => {
             return res.status(500).json({ msg: 'Internal server error'});
         }
 
-        db.query('INSERT INTO users (username, email, password) VALUES (?, ?, ?)',
+        db.all('INSERT INTO users (username, email, password) VALUES (?, ?, ?)',
             [username, email, hash],
             (err, result) => {
                 if (err) {
@@ -42,7 +42,7 @@ const register = (req, res) => {
 // Login system
 const login = (req, res) => {
     const { username, password } = req.body;
-    db.query('SELECT * FROM users WHERE username = ?', [username], (err, result) => {
+    db.all('SELECT * FROM users WHERE username = ?', [username], (err, result) => {
         if (err) {
             return res.status(500).json({ msg: 'Internal server error' });
         }
