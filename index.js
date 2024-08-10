@@ -79,7 +79,7 @@ app.use((req, res) => {
     res.json("404");
 });
 
-app.listen(3000, () => {
+app.listen(80, () => {
     console.log("....serving!!");
 });
 
